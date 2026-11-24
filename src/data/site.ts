@@ -7,7 +7,7 @@ export const profile = {
   nameEn: "Hao Chen Tseng",
   initials: "HC",
   role: "Pharmacist · Researcher · Builder",
-  email: "409030002@mail.ndmctsgh.edu.tw",
+  email: "Almightyhao@mail.ndmutsgh.edu.tw",
   github: "https://github.com/Almightyhao",
   orcid: "https://orcid.org/0009-0007-0367-3269",
   /** Your own portrait. Put the file in public/photos/ — leave as is to hide. */
