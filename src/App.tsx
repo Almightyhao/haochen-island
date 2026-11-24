@@ -180,49 +180,59 @@ function ScrollLight({ text, className }: { text: string; className?: string }) 
   )
 }
 
-/** Field-notes tile: your photo with caption, or an intentional text tile until the photo is added. */
+/**
+ * Field-notes tile: the whole photo at its natural shape (never cropped), caption underneath.
+ * Portrait shots (posters) take a third of the row, landscape shots half; detected on load.
+ */
 function FieldCard({
   src,
   caption,
   where,
   i,
-  className,
   onOpen,
 }: {
   src: string
   caption: string
   where: string
   i: number
-  className?: string
   onOpen: (src: string, alt: string) => void
 }) {
   const [ok, setOk] = React.useState(true)
+  const [portrait, setPortrait] = React.useState(true)
+  const url = photo(src)
   return (
-    <figure className={cn("reveal group relative overflow-hidden rounded-[26px] ring-1 ring-ink/5", ok ? "bg-paper-2" : "bg-white", className)}>
+    <figure className={cn("reveal group flex flex-col", portrait ? "lg:col-span-4" : "lg:col-span-6")}>
       {ok ? (
-        <>
+        <button
+          type="button"
+          onClick={() => onOpen(url, caption)}
+          aria-label={`放大：${caption}`}
+          className="relative block w-full cursor-zoom-in overflow-hidden rounded-[22px] bg-white p-2 shadow-[0_18px_50px_-24px_rgba(20,20,20,0.35)] ring-1 ring-ink/5 transition-transform duration-500 hover:-translate-y-1"
+        >
           <img
-            src={photo(src)}
+            src={url}
             alt={caption}
             loading="lazy"
+            onLoad={(e) => setPortrait(e.currentTarget.naturalWidth < e.currentTarget.naturalHeight)}
             onError={() => setOk(false)}
-            onClick={() => onOpen(photo(src), caption)}
-            className="h-full w-full cursor-zoom-in object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            className="block h-auto w-full rounded-[16px]"
           />
-          <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent p-5 pt-16 text-white">
-            <p className="text-[15px] font-semibold leading-snug">{caption}</p>
-            <p className="mt-0.5 text-[13px] opacity-75">{where}</p>
-          </figcaption>
-        </>
+          <span className="pointer-events-none absolute right-4 top-4 rounded-full bg-ink/70 px-3 py-1.5 text-[12px] font-semibold text-white opacity-0 backdrop-blur-md transition-opacity group-hover:opacity-100">
+            點擊放大
+          </span>
+        </button>
       ) : (
-        <figcaption className="flex h-full flex-col justify-between bg-[radial-gradient(circle_at_90%_10%,rgba(79,188,180,0.16),transparent_50%),radial-gradient(circle_at_0%_100%,rgba(219,106,65,0.12),transparent_55%)] p-6">
+        <div className="flex aspect-[4/3] flex-col justify-between rounded-[22px] bg-white bg-[radial-gradient(circle_at_90%_10%,rgba(79,188,180,0.16),transparent_50%),radial-gradient(circle_at_0%_100%,rgba(219,106,65,0.12),transparent_55%)] p-6 ring-1 ring-ink/5">
           <span className="font-serif text-5xl italic text-tomato/70">{String(i + 1).padStart(2, "0")}</span>
-          <div>
-            <p className={cn("font-semibold leading-snug", i === 0 ? "text-[clamp(1.4rem,2.4vw,2rem)]" : "text-lg")}>{caption}</p>
-            <p className="mt-1 text-[14px] text-muted">{where}</p>
-          </div>
-        </figcaption>
+        </div>
       )}
+      <figcaption className="mt-4 flex items-baseline gap-3 px-1">
+        <span className="font-serif text-lg italic text-tomato">{String(i + 1).padStart(2, "0")}</span>
+        <div>
+          <p className="text-[16px] font-semibold leading-snug">{caption}</p>
+          <p className="mt-0.5 text-[14px] text-muted">{where}</p>
+        </div>
+      </figcaption>
     </figure>
   )
 }
@@ -358,7 +368,7 @@ export default function App() {
                   <OwnPhoto
                     src={profile.portrait}
                     alt={`${profile.nameZh} 個人照`}
-                    className="aspect-[4/5] w-full object-cover"
+                    className="block h-auto w-full"
                     fallback={<img src={img("island-pharmacy")} alt="藥學島插畫" className="aspect-[4/5] w-full object-cover" />}
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-5 text-white">
@@ -460,21 +470,9 @@ export default function App() {
               <Plate k="island-harbor" alt="研討會港插畫" className="mx-auto w-[min(380px,82vw)] mix-blend-multiply" />
             </div>
 
-            <div className="mt-14 grid auto-rows-[260px] gap-4 sm:grid-cols-2 lg:grid-cols-12">
+            <div className="mt-14 grid items-start gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-12">
               {fieldNotes.map((f, i) => (
-                <FieldCard
-                  key={f.src}
-                  i={i}
-                  {...f}
-                  onOpen={open}
-                  className={cn(
-                    i === 0 && "sm:col-span-2 lg:col-span-7 lg:row-span-2",
-                    i === 1 && "lg:col-span-5",
-                    i === 2 && "lg:col-span-5",
-                    i === 3 && "lg:col-span-6",
-                    i === 4 && "sm:col-span-2 lg:col-span-6",
-                  )}
-                />
+                <FieldCard key={f.src} i={i} {...f} onOpen={open} />
               ))}
             </div>
           </div>
@@ -590,14 +588,14 @@ export default function App() {
             <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {credentials.map((c) => (
                 <figure key={c.src} className="reveal overflow-hidden rounded-[24px] bg-white/[0.05] ring-1 ring-white/10">
-                  <div className="aspect-[4/3] overflow-hidden bg-white/[0.04]">
+                  <div className="aspect-[4/3] overflow-hidden bg-white p-2">
                     <OwnPhoto
                       src={c.src}
                       alt={c.title}
                       onOpen={open}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full rounded-[14px] object-contain"
                       fallback={
-                        <div className="grid h-full place-items-center bg-[radial-gradient(circle_at_50%_120%,rgba(219,106,65,0.35),transparent_60%)]">
+                        <div className="grid h-full place-items-center rounded-[14px] bg-night bg-[radial-gradient(circle_at_50%_120%,rgba(219,106,65,0.35),transparent_60%)]">
                           <span className="font-serif text-6xl italic text-white/25">{c.year.slice(0, 4)}</span>
                         </div>
                       }
