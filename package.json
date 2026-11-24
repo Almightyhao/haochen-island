@@ -1,0 +1,36 @@
+{
+  "name": "haochen-island",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "images": "node scripts/fetch-images.mjs",
+    "predev": "node scripts/fetch-images.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/fetch-images.mjs",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.79.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.1",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.90.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.5",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.6"
+  }
+}
