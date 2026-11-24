@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* VOICE: calm, curious, precise — a researcher's field atlas
+   IDEA: an archipelago map; every island is one chapter of the story
+   PICTURE: live 3D low-poly islands + Higgsfield clay-render island plates
+   COLOUR: warm paper #ebe9e5, ink #141414, tomato #db6a41, deep sea night #0e1220
+   TYPE: Inter / Noto Sans TC with Instrument Serif italic for the second voice */
+
+@theme {
+  --color-paper: #ebe9e5;
+  --color-paper-2: #f4f2ee;
+  --color-ink: #141414;
+  --color-muted: #6b675f;
+  --color-tomato: #db6a41;
+  --color-sea: #4fbcb4;
+  --color-night: #0e1220;
+  --font-sans: "Inter", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", "Noto Serif TC", Georgia, serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    overflow-x: clip;
+  }
+  ::selection { background: #db6a41; color: white; }
+  :focus-visible { outline: 2px solid #db6a41; outline-offset: 3px; }
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+.float-plate { animation: floaty 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .float-plate, .marquee-track { animation: none !important; }
+}
